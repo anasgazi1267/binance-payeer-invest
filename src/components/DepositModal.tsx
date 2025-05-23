@@ -6,6 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Check, Upload, CreditCard, Wallet } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface DepositModalProps {
   isOpen: boolean;
@@ -15,6 +18,9 @@ interface DepositModalProps {
 export const DepositModal = ({ isOpen, onClose }: DepositModalProps) => {
   const [amount, setAmount] = useState("");
   const [selectedMethod, setSelectedMethod] = useState("");
+  const [step, setStep] = useState(1);
+  const [transactionId, setTransactionId] = useState("");
+  const [screenshot, setScreenshot] = useState<File | null>(null);
   const { toast } = useToast();
 
   const depositMethods = [
@@ -22,19 +28,22 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalProps) => {
       id: "binance",
       name: "Binance Pay",
       id_value: "787819330",
-      description: "Pay using Binance Pay ID"
+      description: "Pay using Binance Pay ID",
+      icon: <CreditCard className="h-10 w-10 text-yellow-400" />
     },
     {
       id: "payeer",
       name: "Payeer",
       id_value: "P1102512228",
-      description: "Pay using Payeer ID"
+      description: "Pay using Payeer ID",
+      icon: <Wallet className="h-10 w-10 text-blue-400" />
     },
     {
       id: "usdt",
       name: "USDT TRC20",
       id_value: "TCCKVuxCKBSufSiKb5jKLtwq9DNRK77dKm",
-      description: "Send USDT to TRC20 address"
+      description: "Send USDT to TRC20 address",
+      icon: <CreditCard className="h-10 w-10 text-green-400" />
     }
   ];
 
@@ -65,88 +74,178 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalProps) => {
       return;
     }
 
+    setStep(2);
+  };
+
+  const handleSubmitTransaction = () => {
+    if (!transactionId) {
+      toast({
+        title: "Transaction ID Required",
+        description: "Please enter your transaction ID",
+        variant: "destructive"
+      });
+      return;
+    }
+
     toast({
-      title: "Deposit Initiated",
-      description: `Please complete the payment using the copied ${selectedMethod} details`,
+      title: "Deposit Submitted",
+      description: "Your deposit request has been submitted for processing",
     });
+    
+    // Reset and close
+    setStep(1);
+    setAmount("");
+    setSelectedMethod("");
+    setTransactionId("");
+    setScreenshot(null);
+    onClose();
+  };
+
+  const handleScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setScreenshot(e.target.files[0]);
+    }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-slate-900 border-white/20 text-white max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Make a Deposit</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-white">Make a Deposit - Cashjo</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6">
-          <div>
-            <Label htmlFor="amount" className="text-white/70">Amount (USD)</Label>
-            <Input
-              id="amount"
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Minimum $1.00"
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
-              min="1"
-              step="0.01"
-            />
-          </div>
+        {step === 1 ? (
+          <div className="space-y-6">
+            <div>
+              <Label htmlFor="amount" className="text-white text-sm">Amount (USD)</Label>
+              <Input
+                id="amount"
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Minimum $1.00"
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                min="1"
+                step="0.01"
+              />
+              <p className="text-xs text-white/70 mt-1">Minimum deposit: $1.00</p>
+            </div>
 
-          <div>
-            <Label className="text-white/70 mb-3 block">Select Payment Method</Label>
-            <div className="space-y-3">
-              {depositMethods.map((method) => (
-                <Card 
-                  key={method.id}
-                  className={`cursor-pointer transition-all ${
-                    selectedMethod === method.id 
-                      ? "bg-purple-500/20 border-purple-500" 
-                      : "bg-white/5 border-white/20 hover:bg-white/10"
-                  }`}
-                  onClick={() => setSelectedMethod(method.id)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="font-medium text-white">{method.name}</h3>
-                        <p className="text-sm text-white/70">{method.description}</p>
-                        <p className="text-xs text-white/50 mt-1">{method.id_value}</p>
+            <div>
+              <Label className="text-white text-sm mb-3 block">Select Payment Method</Label>
+              <div className="grid gap-3">
+                {depositMethods.map((method) => (
+                  <Card 
+                    key={method.id}
+                    className={`cursor-pointer transition-all ${
+                      selectedMethod === method.id 
+                        ? "bg-purple-600/30 border-purple-500" 
+                        : "bg-white/5 border-white/20 hover:bg-white/10"
+                    }`}
+                    onClick={() => setSelectedMethod(method.id)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="p-2 bg-white/10 rounded-lg">
+                          {method.icon}
+                        </div>
+                        <div className="flex-grow">
+                          <h3 className="font-medium text-white">{method.name}</h3>
+                          <p className="text-sm text-white/70">{method.description}</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyToClipboard(method.id_value, method.name);
+                          }}
+                          className="border-white/20 text-white hover:bg-white/10"
+                        >
+                          Copy
+                        </Button>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          copyToClipboard(method.id_value, method.name);
-                        }}
-                        className="border-white/20 text-white hover:bg-white/10"
-                      >
-                        Copy
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex space-x-3">
+              <Button 
+                variant="outline" 
+                onClick={onClose}
+                className="flex-1 border-white/20 text-white hover:bg-white/10"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleDeposit}
+                className="flex-1 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+              >
+                Continue
+              </Button>
             </div>
           </div>
+        ) : (
+          <div className="space-y-6">
+            <div>
+              <Label htmlFor="transactionId" className="text-white text-sm">Transaction ID</Label>
+              <Input
+                id="transactionId"
+                value={transactionId}
+                onChange={(e) => setTransactionId(e.target.value)}
+                placeholder="Enter your transaction ID"
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              />
+              <p className="text-xs text-white/70 mt-1">Enter the transaction ID from your payment</p>
+            </div>
 
-          <div className="flex space-x-3">
-            <Button 
-              variant="outline" 
-              onClick={onClose}
-              className="flex-1 border-white/20 text-white hover:bg-white/10"
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleDeposit}
-              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-            >
-              Confirm Deposit
-            </Button>
+            <div>
+              <Label htmlFor="screenshot" className="text-white text-sm">Upload Screenshot (Optional)</Label>
+              <div className="mt-2 flex justify-center border border-dashed border-white/30 rounded-lg p-6 bg-white/5">
+                <div className="text-center space-y-2">
+                  <Upload className="mx-auto h-12 w-12 text-white/50" />
+                  <p className="text-sm text-white/70">
+                    {screenshot ? screenshot.name : "Click to upload or drag and drop"}
+                  </p>
+                  <input
+                    type="file"
+                    id="screenshot"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={handleScreenshotChange}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="border-white/20 text-white hover:bg-white/10"
+                    onClick={() => document.getElementById("screenshot")?.click()}
+                  >
+                    Select File
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex space-x-3">
+              <Button 
+                variant="outline" 
+                onClick={() => setStep(1)}
+                className="flex-1 border-white/20 text-white hover:bg-white/10"
+              >
+                Back
+              </Button>
+              <Button 
+                onClick={handleSubmitTransaction}
+                className="flex-1 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+              >
+                Submit Deposit
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   );

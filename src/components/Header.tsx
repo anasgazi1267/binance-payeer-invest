@@ -10,10 +10,10 @@ export const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">I</span>
+            <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg">C</span>
             </div>
-            <h1 className="text-2xl font-bold text-white">InvestPro</h1>
+            <h1 className="text-2xl font-bold text-white">Cashjo</h1>
           </div>
           
           <div className="flex items-center space-x-6">
