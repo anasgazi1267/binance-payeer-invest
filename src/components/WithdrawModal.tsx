@@ -20,11 +20,12 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { toast } = useToast();
 
   const handleWithdraw = () => {
-    if (!amount || parseFloat(amount) < 1.5) {
+    if (!amount || parseFloat(amount) < 0.5) {
       toast({
         title: "Invalid Amount",
-        description: "Minimum withdrawal is $1.50",
-        variant: "destructive"
+        description: "Minimum withdrawal is $0.50",
+        variant: "destructive",
+        className: "bg-slate-800 border-red-500/30 text-white"
       });
       return;
     }
@@ -33,56 +34,63 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
       toast({
         title: "Missing Information",
         description: "Please select withdrawal method and enter address/ID",
-        variant: "destructive"
+        variant: "destructive",
+        className: "bg-slate-800 border-red-500/30 text-white"
       });
       return;
     }
 
     toast({
-      title: "Withdrawal Requested",
-      description: "Your withdrawal request has been submitted for processing",
+      title: "Withdrawal Successful",
+      description: "Your withdrawal request has been submitted. You will receive the payment within 24 hours.",
+      className: "bg-slate-800 border-green-500/30 text-white"
     });
     onClose();
+    setAmount("");
+    setMethod("");
+    setAddress("");
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-slate-900 border-amber-500/30 text-white max-w-md">
+      <DialogContent className="bg-gradient-to-br from-slate-800 to-slate-900 border-emerald-500/30 text-white max-w-md backdrop-blur-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Withdraw Funds</DialogTitle>
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
+            Withdraw Funds
+          </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6">
           <div>
-            <Label htmlFor="withdraw-amount" className="text-white/70">Amount (USD)</Label>
+            <Label htmlFor="withdraw-amount" className="text-gray-300 font-medium">Amount (USD)</Label>
             <Input
               id="withdraw-amount"
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="Minimum $1.50"
-              className="bg-white/10 border-amber-500/30 text-white placeholder:text-white/50"
-              min="1.5"
+              placeholder="Minimum $0.50"
+              className="mt-2 bg-slate-700/50 border-emerald-500/30 text-white placeholder:text-gray-400 focus:border-emerald-400"
+              min="0.5"
               step="0.01"
             />
           </div>
 
           <div>
-            <Label className="text-white/70">Withdrawal Method</Label>
+            <Label className="text-gray-300 font-medium">Withdrawal Method</Label>
             <Select value={method} onValueChange={setMethod}>
-              <SelectTrigger className="bg-white/10 border-amber-500/30 text-white">
+              <SelectTrigger className="mt-2 bg-slate-700/50 border-emerald-500/30 text-white focus:border-emerald-400">
                 <SelectValue placeholder="Select method" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-amber-500/30">
-                <SelectItem value="binance">Binance Pay</SelectItem>
-                <SelectItem value="payeer">Payeer</SelectItem>
-                <SelectItem value="usdt">USDT TRC20</SelectItem>
+              <SelectContent className="bg-slate-800 border-emerald-500/30 text-white">
+                <SelectItem value="binance" className="focus:bg-emerald-500/20">Binance Pay</SelectItem>
+                <SelectItem value="payeer" className="focus:bg-emerald-500/20">Payeer</SelectItem>
+                <SelectItem value="usdt" className="focus:bg-emerald-500/20">USDT TRC20</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <Label htmlFor="address" className="text-white/70">
+            <Label htmlFor="address" className="text-gray-300 font-medium">
               {method === "binance" ? "Binance Pay ID" : 
                method === "payeer" ? "Payeer ID" : 
                method === "usdt" ? "USDT TRC20 Address" : "Address/ID"}
@@ -92,12 +100,12 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder={`Enter your ${method} ${method === "usdt" ? "address" : "ID"}`}
-              className="bg-white/10 border-amber-500/30 text-white placeholder:text-white/50"
+              className="mt-2 bg-slate-700/50 border-emerald-500/30 text-white placeholder:text-gray-400 focus:border-emerald-400"
             />
           </div>
 
-          <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
-            <p className="text-amber-300 text-sm">
+          <div className="bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/30 rounded-lg p-4">
+            <p className="text-emerald-300 text-sm leading-relaxed">
               ⚠️ Withdrawals are processed within 24-48 hours. Please ensure your address/ID is correct.
             </p>
           </div>
@@ -106,16 +114,16 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
             <Button 
               variant="outline" 
               onClick={onClose}
-              className="flex-1 border-amber-500/30 bg-slate-800/50 text-white hover:bg-amber-500/10"
+              className="flex-1 border-slate-600 bg-slate-700/50 text-gray-300 hover:bg-slate-600/50 hover:text-white"
             >
               Cancel
             </Button>
             <Button 
               onClick={handleWithdraw}
-              className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+              className="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold"
             >
               <ArrowUpRight className="mr-2 h-4 w-4" />
-              Withdraw
+              Submit
             </Button>
           </div>
         </div>
