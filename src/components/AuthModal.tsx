@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "login" | "register";
   onModeSwitch: () => void;
-  onSuccess: (userData: { name: string; email: string }) => void;
+  onSuccess: () => void;
 }
 
 export const AuthModal = ({ isOpen, onClose, mode, onModeSwitch, onSuccess }: AuthModalProps) => {
@@ -25,70 +26,106 @@ export const AuthModal = ({ isOpen, onClose, mode, onModeSwitch, onSuccess }: Au
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { signIn, signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Basic validation
-    if (mode === "register") {
-      if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-        toast({
-          title: "Missing Information",
-          description: "Please fill in all fields",
-          variant: "destructive"
-        });
-        setIsLoading(false);
-        return;
-      }
+    try {
+      // Basic validation
+      if (mode === "register") {
+        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+          toast({
+            title: "Missing Information",
+            description: "Please fill in all fields",
+            variant: "destructive"
+          });
+          setIsLoading(false);
+          return;
+        }
 
-      if (formData.password !== formData.confirmPassword) {
-        toast({
-          title: "Password Mismatch",
-          description: "Passwords do not match",
-          variant: "destructive"
-        });
-        setIsLoading(false);
-        return;
-      }
+        if (formData.password !== formData.confirmPassword) {
+          toast({
+            title: "Password Mismatch",
+            description: "Passwords do not match",
+            variant: "destructive"
+          });
+          setIsLoading(false);
+          return;
+        }
 
-      if (formData.password.length < 6) {
-        toast({
-          title: "Weak Password",
-          description: "Password must be at least 6 characters",
-          variant: "destructive"
-        });
-        setIsLoading(false);
-        return;
-      }
-    } else {
-      if (!formData.email || !formData.password) {
-        toast({
-          title: "Missing Information",
-          description: "Please enter email and password",
-          variant: "destructive"
-        });
-        setIsLoading(false);
-        return;
-      }
-    }
+        if (formData.password.length < 6) {
+          toast({
+            title: "Weak Password",
+            description: "Password must be at least 6 characters",
+            variant: "destructive"
+          });
+          setIsLoading(false);
+          return;
+        }
 
-    // Simulate API call
-    setTimeout(() => {
-      toast({
-        title: mode === "login" ? "Welcome Back!" : "Account Created!",
-        description: mode === "login" ? "You have successfully logged in" : "Your account has been created successfully",
-      });
+        // Register with Supabase
+        const { error } = await signUp(formData.email, formData.password, {
+          full_name: formData.name
+        });
+
+        if (error) {
+          toast({
+            title: "Registration Failed",
+            description: error.message,
+            variant: "destructive"
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        toast({
+          title: "Account Created!",
+          description: "Your account has been created successfully",
+        });
+      } else {
+        if (!formData.email || !formData.password) {
+          toast({
+            title: "Missing Information",
+            description: "Please enter email and password",
+            variant: "destructive"
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        // Login with Supabase
+        const { error } = await signIn(formData.email, formData.password);
+
+        if (error) {
+          toast({
+            title: "Login Failed",
+            description: error.message,
+            variant: "destructive"
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        toast({
+          title: "Welcome Back!",
+          description: "You have successfully logged in",
+        });
+      }
       
-      onSuccess({
-        name: formData.name || "User",
-        email: formData.email
-      });
-      
+      onSuccess();
       setFormData({ name: "", email: "", password: "", confirmPassword: "" });
       setIsLoading(false);
       onClose();
-    }, 1000);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+    }
   };
 
   return (

@@ -10,7 +10,7 @@ import { InvestmentPackages } from "@/components/InvestmentPackages";
 import { ReferralSystem } from "@/components/ReferralSystem";
 import { Transactions } from "@/components/Transactions";
 import { Wallet } from "@/components/Wallet";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 
 const AppContent = () => {
@@ -22,6 +22,32 @@ const AppContent = () => {
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Update active tab based on current route
+  useEffect(() => {
+    const path = location.pathname;
+    switch (path) {
+      case "/":
+        setActiveTab("dashboard");
+        break;
+      case "/wallet":
+        setActiveTab("wallet");
+        break;
+      case "/packages":
+        setActiveTab("packages");
+        break;
+      case "/transactions":
+        setActiveTab("transactions");
+        break;
+      case "/referral":
+        setActiveTab("referral");
+        break;
+      default:
+        setActiveTab("dashboard");
+        break;
+    }
+  }, [location.pathname]);
 
   const handleLogin = () => {
     setAuthMode("login");
@@ -35,6 +61,7 @@ const AppContent = () => {
 
   const handleAuthSuccess = () => {
     setShowAuthModal(false);
+    // User will be automatically redirected to dashboard after successful auth
   };
 
   const handleLogout = async () => {
