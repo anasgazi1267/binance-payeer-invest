@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, Upload, CreditCard, Wallet } from "lucide-react";
+import { Check, Upload, CreditCard, Wallet, Copy } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
 interface DepositModalProps {
@@ -109,7 +109,7 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-slate-900 border-white/20 text-white max-w-md">
+      <DialogContent className="bg-slate-900 border-indigo-500/30 text-white max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-white">Make a Deposit - Cashjo</DialogTitle>
         </DialogHeader>
@@ -124,7 +124,7 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalProps) => {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="Minimum $1.00"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                className="bg-white/10 border-indigo-500/30 text-white placeholder:text-white/50"
                 min="1"
                 step="0.01"
               />
@@ -139,7 +139,7 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalProps) => {
                     key={method.id}
                     className={`cursor-pointer transition-all ${
                       selectedMethod === method.id 
-                        ? "bg-purple-600/30 border-purple-500" 
+                        ? "bg-indigo-600/30 border-indigo-500" 
                         : "bg-white/5 border-white/20 hover:bg-white/10"
                     }`}
                     onClick={() => setSelectedMethod(method.id)}
@@ -160,8 +160,9 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalProps) => {
                             e.stopPropagation();
                             copyToClipboard(method.id_value, method.name);
                           }}
-                          className="border-white/20 text-white hover:bg-white/10"
+                          className="border-indigo-500/30 bg-indigo-500/20 text-white hover:bg-indigo-500/30"
                         >
+                          <Copy className="h-4 w-4 mr-1" />
                           Copy
                         </Button>
                       </div>
@@ -175,13 +176,13 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalProps) => {
               <Button 
                 variant="outline" 
                 onClick={onClose}
-                className="flex-1 border-white/20 text-white hover:bg-white/10"
+                className="flex-1 border-indigo-500/30 bg-slate-800/50 text-white hover:bg-indigo-500/10"
               >
                 Cancel
               </Button>
               <Button 
                 onClick={handleDeposit}
-                className="flex-1 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+                className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white"
               >
                 Continue
               </Button>
@@ -196,16 +197,16 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalProps) => {
                 value={transactionId}
                 onChange={(e) => setTransactionId(e.target.value)}
                 placeholder="Enter your transaction ID"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                className="bg-white/10 border-indigo-500/30 text-white placeholder:text-white/50"
               />
               <p className="text-xs text-white/70 mt-1">Enter the transaction ID from your payment</p>
             </div>
 
             <div>
               <Label htmlFor="screenshot" className="text-white text-sm">Upload Screenshot (Optional)</Label>
-              <div className="mt-2 flex justify-center border border-dashed border-white/30 rounded-lg p-6 bg-white/5">
+              <div className="mt-2 flex justify-center border border-dashed border-indigo-500/30 rounded-lg p-6 bg-indigo-500/5">
                 <div className="text-center space-y-2">
-                  <Upload className="mx-auto h-12 w-12 text-white/50" />
+                  <Upload className="mx-auto h-12 w-12 text-indigo-400" />
                   <p className="text-sm text-white/70">
                     {screenshot ? screenshot.name : "Click to upload or drag and drop"}
                   </p>
@@ -220,7 +221,7 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalProps) => {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="border-white/20 text-white hover:bg-white/10"
+                    className="border-indigo-500/30 bg-indigo-500/20 text-white hover:bg-indigo-500/30"
                     onClick={() => document.getElementById("screenshot")?.click()}
                   >
                     Select File
@@ -233,13 +234,13 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalProps) => {
               <Button 
                 variant="outline" 
                 onClick={() => setStep(1)}
-                className="flex-1 border-white/20 text-white hover:bg-white/10"
+                className="flex-1 border-indigo-500/30 bg-slate-800/50 text-white hover:bg-indigo-500/10"
               >
                 Back
               </Button>
               <Button 
                 onClick={handleSubmitTransaction}
-                className="flex-1 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+                className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white"
               >
                 Submit Deposit
               </Button>

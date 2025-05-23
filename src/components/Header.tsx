@@ -38,7 +38,7 @@ export const Header = ({
                 <Menu className="h-6 w-6" />
               </Button>
             )}
-            <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">C</span>
             </div>
             <h1 className="text-2xl font-bold text-white">Cashjo</h1>
@@ -49,22 +49,22 @@ export const Header = ({
               <>
                 <div className="text-white hidden sm:block">
                   <span className="text-sm text-white/70">Balance:</span>
-                  <span className="ml-2 font-bold text-lg text-green-400">${balance.toFixed(2)}</span>
+                  <span className="ml-2 font-bold text-lg text-indigo-400">${balance.toFixed(2)}</span>
                 </div>
                 <div className="relative">
                   <Button
                     variant="outline"
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="border-white/20 text-white hover:bg-white/10 bg-white/5"
+                    className="border-indigo-500/30 bg-indigo-500/20 text-white hover:bg-indigo-500/30"
                   >
                     <User className="h-4 w-4 mr-2" />
                     <span className="hidden sm:inline">Profile</span>
                   </Button>
                   {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-slate-800 border border-white/20 rounded-lg shadow-lg z-50">
-                      <div className="p-3 border-b border-white/10">
+                    <div className="absolute right-0 mt-2 w-48 bg-slate-800 border border-indigo-500/30 rounded-lg shadow-lg z-50">
+                      <div className="p-3 border-b border-indigo-500/20">
                         <p className="text-white font-medium">{currentUser?.name || "User"}</p>
-                        <p className="text-white/70 text-sm">{currentUser?.email || "user@example.com"}</p>
+                        <p className="text-indigo-200 text-sm">{currentUser?.email || "user@example.com"}</p>
                       </div>
                       <button
                         onClick={onLogout}
@@ -82,13 +82,13 @@ export const Header = ({
                 <Button
                   variant="outline"
                   onClick={onLogin}
-                  className="border-white/20 text-white hover:bg-white/10 bg-white/5"
+                  className="border-indigo-500/30 text-white hover:bg-white/10 bg-white/5"
                 >
                   Login
                 </Button>
                 <Button
                   onClick={onRegister}
-                  className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
                 >
                   Register
                 </Button>

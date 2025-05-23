@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { ArrowUpRight } from "lucide-react";
 
 interface WithdrawModalProps {
   isOpen: boolean;
@@ -46,7 +47,7 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-slate-900 border-white/20 text-white max-w-md">
+      <DialogContent className="bg-slate-900 border-amber-500/30 text-white max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Withdraw Funds</DialogTitle>
         </DialogHeader>
@@ -60,7 +61,7 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Minimum $1.50"
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              className="bg-white/10 border-amber-500/30 text-white placeholder:text-white/50"
               min="1.5"
               step="0.01"
             />
@@ -69,10 +70,10 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
           <div>
             <Label className="text-white/70">Withdrawal Method</Label>
             <Select value={method} onValueChange={setMethod}>
-              <SelectTrigger className="bg-white/10 border-white/20 text-white">
+              <SelectTrigger className="bg-white/10 border-amber-500/30 text-white">
                 <SelectValue placeholder="Select method" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-white/20">
+              <SelectContent className="bg-slate-800 border-amber-500/30">
                 <SelectItem value="binance">Binance Pay</SelectItem>
                 <SelectItem value="payeer">Payeer</SelectItem>
                 <SelectItem value="usdt">USDT TRC20</SelectItem>
@@ -91,12 +92,12 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder={`Enter your ${method} ${method === "usdt" ? "address" : "ID"}`}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              className="bg-white/10 border-amber-500/30 text-white placeholder:text-white/50"
             />
           </div>
 
-          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3">
-            <p className="text-yellow-400 text-sm">
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+            <p className="text-amber-300 text-sm">
               ⚠️ Withdrawals are processed within 24-48 hours. Please ensure your address/ID is correct.
             </p>
           </div>
@@ -105,14 +106,15 @@ export const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
             <Button 
               variant="outline" 
               onClick={onClose}
-              className="flex-1 border-white/20 text-white hover:bg-white/10"
+              className="flex-1 border-amber-500/30 bg-slate-800/50 text-white hover:bg-amber-500/10"
             >
               Cancel
             </Button>
             <Button 
               onClick={handleWithdraw}
-              className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+              className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
             >
+              <ArrowUpRight className="mr-2 h-4 w-4" />
               Withdraw
             </Button>
           </div>

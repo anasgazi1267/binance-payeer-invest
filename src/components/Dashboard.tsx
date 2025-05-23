@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, ArrowUp, DollarSign, BanknoteIcon, Users, TrendingUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface DashboardProps {
   onDeposit: () => void;
@@ -19,6 +20,11 @@ export const Dashboard = ({ onDeposit, onWithdraw }: DashboardProps) => {
     referralCount: 0,
     todayEarnings: 0.00
   });
+  const navigate = useNavigate();
+
+  const handleWallet = () => {
+    navigate('/wallet');
+  };
 
   return (
     <div className="space-y-6">
@@ -103,13 +109,13 @@ export const Dashboard = ({ onDeposit, onWithdraw }: DashboardProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-green-100">
+            <p className="text-cyan-200">
               Start your investment journey with a minimum deposit of $1.00. 
               Choose from multiple payment methods including Binance Pay, Payeer, and USDT.
             </p>
             <Button 
-              onClick={onDeposit}
-              className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-semibold"
+              onClick={handleWallet}
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold"
             >
               Deposit Funds
             </Button>
@@ -124,14 +130,14 @@ export const Dashboard = ({ onDeposit, onWithdraw }: DashboardProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-red-100">
+            <p className="text-amber-200">
               Withdraw your earnings anytime with a minimum of $1.50. 
               Fast processing within 24-48 hours to your preferred payment method.
             </p>
             <Button 
-              onClick={onWithdraw}
+              onClick={handleWallet}
               variant="outline"
-              className="w-full border-red-400/50 text-red-400 hover:bg-red-500/10 hover:border-red-400 font-semibold"
+              className="w-full border-amber-400/50 text-amber-400 hover:bg-amber-500/20 hover:border-amber-400 font-semibold"
             >
               Withdraw Funds
             </Button>
@@ -168,8 +174,8 @@ export const Dashboard = ({ onDeposit, onWithdraw }: DashboardProps) => {
                 🚀 Ready to start earning? Browse our investment packages and choose the one that fits your goals!
               </p>
               <Button
-                onClick={onDeposit}
-                className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+                onClick={handleWallet}
+                className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white"
               >
                 View Investment Packages
               </Button>

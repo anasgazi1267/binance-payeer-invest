@@ -9,6 +9,8 @@ import { WithdrawModal } from "@/components/WithdrawModal";
 import { InvestmentPackages } from "@/components/InvestmentPackages";
 import { ReferralSystem } from "@/components/ReferralSystem";
 import { Transactions } from "@/components/Transactions";
+import { Wallet } from "@/components/Wallet";
+import { Routes, Route, useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,6 +21,7 @@ const Index = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = () => {
     setAuthMode("login");
@@ -41,10 +44,36 @@ const Index = () => {
     setCurrentUser(null);
     setActiveTab("dashboard");
     setShowSidebar(false);
+    navigate("/");
   };
 
   const handleModeSwitch = () => {
     setAuthMode(authMode === "login" ? "register" : "login");
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    
+    switch (tab) {
+      case "dashboard":
+        navigate("/");
+        break;
+      case "wallet":
+        navigate("/wallet");
+        break;
+      case "packages":
+        navigate("/packages");
+        break;
+      case "transactions":
+        navigate("/transactions");
+        break;
+      case "referral":
+        navigate("/referral");
+        break;
+      default:
+        navigate("/");
+        break;
+    }
   };
 
   const renderContent = () => {
@@ -52,6 +81,13 @@ const Index = () => {
       case "dashboard":
         return (
           <Dashboard 
+            onDeposit={() => setShowDepositModal(true)}
+            onWithdraw={() => setShowWithdrawModal(true)}
+          />
+        );
+      case "wallet":
+        return (
+          <Wallet
             onDeposit={() => setShowDepositModal(true)}
             onWithdraw={() => setShowWithdrawModal(true)}
           />
@@ -84,7 +120,7 @@ const Index = () => {
         <div className="container mx-auto px-4 pt-32 pb-10">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-400">Cashjo</span>
+              Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Cashjo</span>
             </h1>
             <p className="text-xl text-white/80 mb-8 leading-relaxed">
               Start your investment journey today with guaranteed daily returns. 
@@ -93,19 +129,19 @@ const Index = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
               <div className="bg-white/10 backdrop-blur-md border-white/20 rounded-xl p-6">
-                <div className="text-3xl font-bold text-green-400 mb-2">8.5% - 18.2%</div>
+                <div className="text-3xl font-bold text-indigo-400 mb-2">8.5% - 18.2%</div>
                 <div className="text-white font-semibold mb-2">Daily Returns</div>
                 <div className="text-white/70 text-sm">Guaranteed daily profits on all packages</div>
               </div>
               
               <div className="bg-white/10 backdrop-blur-md border-white/20 rounded-xl p-6">
-                <div className="text-3xl font-bold text-blue-400 mb-2">$5</div>
+                <div className="text-3xl font-bold text-purple-400 mb-2">$5</div>
                 <div className="text-white font-semibold mb-2">Minimum Start</div>
                 <div className="text-white/70 text-sm">Begin investing with just $5</div>
               </div>
               
               <div className="bg-white/10 backdrop-blur-md border-white/20 rounded-xl p-6">
-                <div className="text-3xl font-bold text-purple-400 mb-2">$0.20</div>
+                <div className="text-3xl font-bold text-pink-400 mb-2">$0.20</div>
                 <div className="text-white font-semibold mb-2">Referral Bonus</div>
                 <div className="text-white/70 text-sm">Earn for each successful referral</div>
               </div>
@@ -114,7 +150,7 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={handleRegister}
-                className="px-8 py-4 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-semibold rounded-lg text-lg transition-all hover:scale-105"
+                className="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold rounded-lg text-lg transition-all hover:scale-105"
               >
                 Start Investing Now
               </button>
@@ -154,7 +190,7 @@ const Index = () => {
             isOpen={true}
             onClose={() => {}}
             activeTab={activeTab}
-            onTabChange={setActiveTab}
+            onTabChange={handleTabChange}
             onLogout={handleLogout}
           />
         </div>
@@ -163,7 +199,7 @@ const Index = () => {
           isOpen={showSidebar}
           onClose={() => setShowSidebar(false)}
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
           onLogout={handleLogout}
         />
         

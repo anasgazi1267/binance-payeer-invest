@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { X, Home, Package, Users, CreditCard, LogOut, ArrowUpDown } from "lucide-react";
+import { X, Home, Package, Users, CreditCard, LogOut, ArrowUpDown, Wallet } from "lucide-react";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -13,6 +13,7 @@ interface SidebarProps {
 export const Sidebar = ({ isOpen, onClose, activeTab, onTabChange, onLogout }: SidebarProps) => {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: Home },
+    { id: "wallet", label: "Wallet", icon: Wallet },
     { id: "packages", label: "Investment Packages", icon: Package },
     { id: "transactions", label: "Transactions", icon: ArrowUpDown },
     { id: "referral", label: "Referral System", icon: Users },
@@ -58,7 +59,7 @@ export const Sidebar = ({ isOpen, onClose, activeTab, onTabChange, onLogout }: S
                 }}
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all text-left ${
                   activeTab === item.id
-                    ? "bg-gradient-to-r from-green-500/20 to-teal-500/20 text-green-400 border border-green-500/30"
+                    ? "bg-gradient-to-r from-indigo-500/40 to-purple-500/40 text-indigo-300 border border-indigo-500/30"
                     : "text-white/80 hover:text-white hover:bg-white/10"
                 }`}
               >
