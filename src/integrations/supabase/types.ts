@@ -124,7 +124,6 @@ export type Database = {
           full_name: string | null
           id: string
           phone: string | null
-          role: Database["public"]["Enums"]["user_role"]
           updated_at: string | null
         }
         Insert: {
@@ -134,7 +133,6 @@ export type Database = {
           full_name?: string | null
           id: string
           phone?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string | null
         }
         Update: {
@@ -144,7 +142,6 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string | null
         }
         Relationships: []
@@ -329,30 +326,16 @@ export type Database = {
       }
     }
     Views: {
-      admin_stats: {
-        Row: {
-          active_packages: number | null
-          pending_deposits: number | null
-          pending_withdrawals: number | null
-          total_deposits: number | null
-          total_users: number | null
-          total_withdrawals: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
       update_user_balance: {
         Args: { p_user_id: string; p_amount: number; p_balance_type?: string }
         Returns: undefined
       }
     }
     Enums: {
-      user_role: "user" | "admin"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -467,8 +450,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      user_role: ["user", "admin"],
-    },
+    Enums: {},
   },
 } as const
