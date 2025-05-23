@@ -21,7 +21,6 @@ export const AdminWithdrawals = () => {
         .from('withdrawals')
         .select(`
           *,
-          profiles (full_name, email),
           payment_methods (name)
         `)
         .order('created_at', { ascending: false });
@@ -30,9 +29,23 @@ export const AdminWithdrawals = () => {
         query = query.eq('status', statusFilter);
       }
 
-      const { data, error } = await query;
+      const { data: withdrawalsData, error } = await query;
       if (error) throw error;
-      return data;
+
+      // Get user profiles separately
+      const userIds = withdrawalsData?.map(w => w.user_id).filter(Boolean) || [];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .in('id', userIds);
+
+      // Merge the data
+      const withdrawalsWithProfiles = withdrawalsData?.map(withdrawal => ({
+        ...withdrawal,
+        profile: profiles?.find(p => p.id === withdrawal.user_id)
+      }));
+
+      return withdrawalsWithProfiles || [];
     },
     refetchInterval: 10000
   });
@@ -136,7 +149,7 @@ export const AdminWithdrawals = () => {
                     <div className="flex items-center gap-3 mb-2">
                       {getStatusIcon(withdrawal.status)}
                       <h3 className="text-lg font-semibold">
-                        {withdrawal.profiles?.full_name || withdrawal.profiles?.email}
+                        {withdrawal.profile?.full_name || withdrawal.profile?.email || 'Unknown User'}
                       </h3>
                       <Badge className={`${getStatusColor(withdrawal.status)} border`}>
                         {withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)}

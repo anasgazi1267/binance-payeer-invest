@@ -26,19 +26,30 @@ export const AdminUsers = () => {
     queryFn: async () => {
       let query = supabase
         .from('profiles')
-        .select(`
-          *,
-          user_balances (*)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (searchTerm) {
         query = query.or(`email.ilike.%${searchTerm}%,full_name.ilike.%${searchTerm}%`);
       }
 
-      const { data, error } = await query;
+      const { data: profilesData, error } = await query;
       if (error) throw error;
-      return data;
+
+      // Get user balances separately
+      const userIds = profilesData?.map(p => p.id) || [];
+      const { data: balancesData } = await supabase
+        .from('user_balances')
+        .select('*')
+        .in('user_id', userIds);
+
+      // Merge the data
+      const usersWithBalances = profilesData?.map(user => ({
+        ...user,
+        balance: balancesData?.find(b => b.user_id === user.id)
+      }));
+
+      return usersWithBalances || [];
     },
     refetchInterval: 10000
   });
@@ -172,19 +183,19 @@ export const AdminUsers = () => {
                       <div>
                         <span className="text-white/60">Main Balance:</span>
                         <div className="font-semibold text-green-400">
-                          ${Number(user.user_balances?.[0]?.main_balance || 0).toFixed(2)}
+                          ${Number(user.balance?.main_balance || 0).toFixed(2)}
                         </div>
                       </div>
                       <div>
                         <span className="text-white/60">Referral Balance:</span>
                         <div className="font-semibold text-purple-400">
-                          ${Number(user.user_balances?.[0]?.referral_balance || 0).toFixed(2)}
+                          ${Number(user.balance?.referral_balance || 0).toFixed(2)}
                         </div>
                       </div>
                       <div>
                         <span className="text-white/60">Total Deposited:</span>
                         <div className="font-semibold text-blue-400">
-                          ${Number(user.user_balances?.[0]?.total_deposited || 0).toFixed(2)}
+                          ${Number(user.balance?.total_deposited || 0).toFixed(2)}
                         </div>
                       </div>
                     </div>

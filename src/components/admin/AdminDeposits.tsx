@@ -21,7 +21,6 @@ export const AdminDeposits = () => {
         .from('deposits')
         .select(`
           *,
-          profiles (full_name, email),
           payment_methods (name)
         `)
         .order('created_at', { ascending: false });
@@ -30,9 +29,23 @@ export const AdminDeposits = () => {
         query = query.eq('status', statusFilter);
       }
 
-      const { data, error } = await query;
+      const { data: depositsData, error } = await query;
       if (error) throw error;
-      return data;
+
+      // Get user profiles separately
+      const userIds = depositsData?.map(d => d.user_id).filter(Boolean) || [];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .in('id', userIds);
+
+      // Merge the data
+      const depositsWithProfiles = depositsData?.map(deposit => ({
+        ...deposit,
+        profile: profiles?.find(p => p.id === deposit.user_id)
+      }));
+
+      return depositsWithProfiles || [];
     },
     refetchInterval: 10000
   });
@@ -136,7 +149,7 @@ export const AdminDeposits = () => {
                     <div className="flex items-center gap-3 mb-2">
                       {getStatusIcon(deposit.status)}
                       <h3 className="text-lg font-semibold">
-                        {deposit.profiles?.full_name || deposit.profiles?.email}
+                        {deposit.profile?.full_name || deposit.profile?.email || 'Unknown User'}
                       </h3>
                       <Badge className={`${getStatusColor(deposit.status)} border`}>
                         {deposit.status.charAt(0).toUpperCase() + deposit.status.slice(1)}
