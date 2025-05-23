@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { AuthModal } from "@/components/AuthModal";
@@ -11,10 +11,10 @@ import { ReferralSystem } from "@/components/ReferralSystem";
 import { Transactions } from "@/components/Transactions";
 import { Wallet } from "@/components/Wallet";
 import { Routes, Route, useNavigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 
-const Index = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState<{ name: string; email: string } | null>(null);
+const AppContent = () => {
+  const { user, loading, signOut } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -33,15 +33,12 @@ const Index = () => {
     setShowAuthModal(true);
   };
 
-  const handleAuthSuccess = (userData: { name: string; email: string }) => {
-    setCurrentUser(userData);
-    setIsAuthenticated(true);
+  const handleAuthSuccess = () => {
     setShowAuthModal(false);
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setCurrentUser(null);
+  const handleLogout = async () => {
+    await signOut();
     setActiveTab("dashboard");
     setShowSidebar(false);
     navigate("/");
@@ -108,7 +105,15 @@ const Index = () => {
     }
   };
 
-  if (!isAuthenticated) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <Header 
@@ -124,20 +129,20 @@ const Index = () => {
             </h1>
             <p className="text-xl text-white/80 mb-8 leading-relaxed">
               Start your investment journey today with guaranteed daily returns. 
-              Choose from our premium investment packages starting at just $5 and watch your money grow!
+              Choose from our premium investment packages starting at just $1 and watch your money grow!
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
               <div className="bg-white/10 backdrop-blur-md border-white/20 rounded-xl p-6">
-                <div className="text-3xl font-bold text-indigo-400 mb-2">8.5% - 18.2%</div>
-                <div className="text-white font-semibold mb-2">Daily Returns</div>
+                <div className="text-3xl font-bold text-indigo-400 mb-2">0.41 - 31.00</div>
+                <div className="text-white font-semibold mb-2">Daily Returns ($)</div>
                 <div className="text-white/70 text-sm">Guaranteed daily profits on all packages</div>
               </div>
               
               <div className="bg-white/10 backdrop-blur-md border-white/20 rounded-xl p-6">
-                <div className="text-3xl font-bold text-purple-400 mb-2">$5</div>
+                <div className="text-3xl font-bold text-purple-400 mb-2">$1</div>
                 <div className="text-white font-semibold mb-2">Minimum Start</div>
-                <div className="text-white/70 text-sm">Begin investing with just $5</div>
+                <div className="text-white/70 text-sm">Begin investing with just $1</div>
               </div>
               
               <div className="bg-white/10 backdrop-blur-md border-white/20 rounded-xl p-6">
@@ -179,7 +184,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <Header 
         isAuthenticated={true}
-        currentUser={currentUser}
+        currentUser={{ name: user.email || 'User', email: user.email || '' }}
         onLogout={handleLogout}
         onMenuClick={() => setShowSidebar(true)}
       />
@@ -219,6 +224,14 @@ const Index = () => {
         onClose={() => setShowWithdrawModal(false)} 
       />
     </div>
+  );
+};
+
+const Index = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 };
 

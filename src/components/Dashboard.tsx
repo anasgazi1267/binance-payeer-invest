@@ -1,7 +1,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Wallet, TrendingUp, Users, DollarSign, Package, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { ArrowUp, ArrowDown, Package, Users, TrendingUp, DollarSign } from "lucide-react";
+import { useUserData } from "@/hooks/useUserData";
 
 interface DashboardProps {
   onDeposit: () => void;
@@ -9,127 +10,147 @@ interface DashboardProps {
 }
 
 export const Dashboard = ({ onDeposit, onWithdraw }: DashboardProps) => {
+  const { balance, packages, referrals } = useUserData();
+
+  const activePackagesCount = packages?.filter(pkg => pkg.status === 'active').length || 0;
+  const todaysEarnings = packages?.reduce((sum, pkg) => {
+    if (pkg.status === 'active' && pkg.investment_packages) {
+      return sum + pkg.investment_packages.daily_return;
+    }
+    return sum;
+  }, 0) || 0;
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-2">
-          Dashboard
-        </h2>
-        <p className="text-gray-300 text-lg">Welcome to your investment overview</p>
+        <h2 className="text-3xl font-bold text-white mb-4">Dashboard</h2>
+        <p className="text-white/70">
+          Welcome to your investment dashboard. Track your earnings and manage your investments.
+        </p>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md border-slate-700/50 text-white hover:border-indigo-500/50 transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Total Balance</CardTitle>
-            <Wallet className="h-5 w-5 text-indigo-400" />
+        <Card className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border-blue-500/30 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-blue-300">Total Balance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-              $0.00
+            <div className="flex items-center justify-between">
+              <span className="text-3xl font-bold text-blue-300">
+                ${(balance?.main_balance || 0).toFixed(2)}
+              </span>
+              <div className="h-12 w-12 rounded-full bg-blue-500/30 flex items-center justify-center">
+                <DollarSign className="h-7 w-7 text-blue-400" />
+              </div>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Available for withdrawal</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md border-slate-700/50 text-white hover:border-purple-500/50 transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Active Packages</CardTitle>
-            <Package className="h-5 w-5 text-purple-400" />
+        <Card className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-green-500/30 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-green-300">Active Packages</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-purple-400">0</div>
-            <p className="text-xs text-gray-500 mt-1">Investment packages</p>
+            <div className="flex items-center justify-between">
+              <span className="text-3xl font-bold text-green-300">{activePackagesCount}</span>
+              <div className="h-12 w-12 rounded-full bg-green-500/30 flex items-center justify-center">
+                <Package className="h-7 w-7 text-green-400" />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md border-slate-700/50 text-white hover:border-amber-500/50 transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Referral Balance</CardTitle>
-            <Users className="h-5 w-5 text-amber-400" />
+        <Card className="bg-gradient-to-br from-purple-500/20 to-violet-500/20 border-purple-500/30 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-purple-300">
+              Referral Balance
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-amber-400">$0.00</div>
-            <p className="text-xs text-gray-500 mt-1">(0 referrals)</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-3xl font-bold text-purple-300">
+                  ${(balance?.referral_balance || 0).toFixed(2)}
+                </span>
+                <p className="text-xs text-purple-200 mt-1">
+                  ({referrals?.length || 0} referrals)
+                </p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-purple-500/30 flex items-center justify-center">
+                <Users className="h-7 w-7 text-purple-400" />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md border-slate-700/50 text-white hover:border-cyan-500/50 transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Today's Earnings</CardTitle>
-            <TrendingUp className="h-5 w-5 text-cyan-400" />
+        <Card className="bg-gradient-to-br from-orange-500/20 to-red-500/20 border-orange-500/30 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-orange-300">
+              Today's Earnings
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-cyan-400">$0.00</div>
-            <p className="text-xs text-gray-500 mt-1">Daily profit</p>
+            <div className="flex items-center justify-between">
+              <span className="text-3xl font-bold text-orange-300">
+                ${todaysEarnings.toFixed(2)}
+              </span>
+              <div className="h-12 w-12 rounded-full bg-orange-500/30 flex items-center justify-center">
+                <TrendingUp className="h-7 w-7 text-orange-400" />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Action Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 backdrop-blur-md border-indigo-500/30 text-white overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10"></div>
-          <CardHeader className="relative z-10">
-            <CardTitle className="text-2xl font-bold text-gray-100 flex items-center">
-              <ArrowDownLeft className="mr-3 h-6 w-6 text-indigo-400" />
-              Make a Deposit
-            </CardTitle>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-white">Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent className="relative z-10">
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              Start your investment journey with a minimum deposit of <span className="text-indigo-400 font-semibold">$1.00</span>. 
-              Choose from multiple payment methods including <span className="text-indigo-400 font-semibold">Binance Pay</span>, 
-              <span className="text-indigo-400 font-semibold"> Payeer</span>, and <span className="text-indigo-400 font-semibold">USDT</span>.
-            </p>
-            <Button 
+          <CardContent className="space-y-4">
+            <Button
               onClick={onDeposit}
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold py-3 text-lg rounded-lg transition-all duration-300 hover:shadow-lg"
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
             >
-              <DollarSign className="mr-2 h-5 w-5" />
-              Deposit Funds
+              <ArrowDown className="mr-2 h-4 w-4" />
+              Make a Deposit
             </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-emerald-900/40 to-green-900/40 backdrop-blur-md border-emerald-500/30 text-white overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10"></div>
-          <CardHeader className="relative z-10">
-            <CardTitle className="text-2xl font-bold text-gray-100 flex items-center">
-              <ArrowUpRight className="mr-3 h-6 w-6 text-emerald-400" />
-              Withdraw Earnings
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="relative z-10">
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              Withdraw your earnings anytime with a minimum of <span className="text-emerald-400 font-semibold">$0.50</span>. 
-              Fast processing within <span className="text-emerald-400 font-semibold">24-48 hours</span> to your preferred payment method.
-            </p>
-            <Button 
+            <Button
               onClick={onWithdraw}
-              className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold py-3 text-lg rounded-lg transition-all duration-300 hover:shadow-lg"
+              className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white"
             >
-              <ArrowUpRight className="mr-2 h-5 w-5" />
+              <ArrowUp className="mr-2 h-4 w-4" />
               Withdraw Funds
             </Button>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Recent Activity */}
-      <Card className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-md border-slate-700/50 text-white">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold text-gray-100">Recent Activity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-12 text-gray-400">
-            <TrendingUp className="h-16 w-16 mx-auto mb-4 opacity-50" />
-            <p className="text-lg">No recent activity</p>
-            <p className="text-sm mt-2">Your transactions and earnings will appear here</p>
-          </div>
-        </CardContent>
-      </Card>
+        <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-white">Account Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-gray-300">Total Deposited:</span>
+              <span className="text-green-400 font-semibold">
+                ${(balance?.total_deposited || 0).toFixed(2)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-300">Total Withdrawn:</span>
+              <span className="text-blue-400 font-semibold">
+                ${(balance?.total_withdrawn || 0).toFixed(2)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-300">Net Profit:</span>
+              <span className="text-yellow-400 font-semibold">
+                ${((balance?.main_balance || 0) + (balance?.referral_balance || 0) - (balance?.total_deposited || 0)).toFixed(2)}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

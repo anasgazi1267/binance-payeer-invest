@@ -21,7 +21,6 @@ const App = () => (
           <Route path="/packages" element={<Index />} />
           <Route path="/transactions" element={<Index />} />
           <Route path="/referral" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
