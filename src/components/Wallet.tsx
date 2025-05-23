@@ -1,9 +1,9 @@
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowDown, ArrowUp, DollarSign } from "lucide-react";
+import { useUserData } from "@/hooks/useUserData";
 
 interface WalletProps {
   onDeposit: () => void;
@@ -11,7 +11,13 @@ interface WalletProps {
 }
 
 export const Wallet = ({ onDeposit, onWithdraw }: WalletProps) => {
-  const [balance] = useState(0.00);
+  const { balance } = useUserData();
+
+  const mainBalance = balance?.main_balance || 0;
+  const referralBalance = balance?.referral_balance || 0;
+  const totalBalance = mainBalance + referralBalance;
+  const totalDeposited = balance?.total_deposited || 0;
+  const totalWithdrawn = balance?.total_withdrawn || 0;
 
   return (
     <div className="space-y-6">
@@ -22,19 +28,71 @@ export const Wallet = ({ onDeposit, onWithdraw }: WalletProps) => {
         </p>
       </div>
 
-      <Card className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border-indigo-500/30 text-white">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-md font-medium text-white">Available Balance</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <span className="text-3xl font-bold text-indigo-300">${balance.toFixed(2)}</span>
-            <div className="h-12 w-12 rounded-full bg-indigo-500/30 flex items-center justify-center">
-              <DollarSign className="h-7 w-7 text-indigo-400" />
+      {/* Balance Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border-indigo-500/30 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-md font-medium text-white">Main Balance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <span className="text-2xl font-bold text-indigo-300">${mainBalance.toFixed(2)}</span>
+              <div className="h-10 w-10 rounded-full bg-indigo-500/30 flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-indigo-400" />
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500/30 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-md font-medium text-white">Referral Balance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <span className="text-2xl font-bold text-purple-300">${referralBalance.toFixed(2)}</span>
+              <div className="h-10 w-10 rounded-full bg-purple-500/30 flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-purple-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-green-500/30 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-md font-medium text-white">Total Available</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <span className="text-2xl font-bold text-green-300">${totalBalance.toFixed(2)}</span>
+              <div className="h-10 w-10 rounded-full bg-green-500/30 flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-green-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="bg-slate-800/50 border-slate-600/30 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-slate-300">Total Deposited</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-green-400">${totalDeposited.toFixed(2)}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800/50 border-slate-600/30 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-slate-300">Total Withdrawn</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-red-400">${totalWithdrawn.toFixed(2)}</div>
+          </CardContent>
+        </Card>
+      </div>
 
       <Tabs defaultValue="deposit" className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-slate-800">
@@ -122,15 +180,21 @@ export const Wallet = ({ onDeposit, onWithdraw }: WalletProps) => {
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Withdraw Funds</h3>
               <p className="text-amber-200 mb-6 max-w-md mx-auto">
-                Withdraw your earnings anytime with a minimum of $1.50. 
+                Withdraw your earnings anytime with a minimum of $0.50. 
                 Fast processing within 24-48 hours to your preferred payment method.
               </p>
               <Button
                 onClick={onWithdraw}
                 className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-8"
+                disabled={totalBalance < 0.5}
               >
                 Withdraw Funds
               </Button>
+              {totalBalance < 0.5 && (
+                <p className="text-amber-300 text-sm mt-2">
+                  Minimum balance of $0.50 required for withdrawal
+                </p>
+              )}
             </div>
             
             <div className="mt-4">
@@ -147,7 +211,7 @@ export const Wallet = ({ onDeposit, onWithdraw }: WalletProps) => {
                     <div>
                       <h4 className="text-sm font-medium text-white mb-1">Withdrawal Information</h4>
                       <ul className="text-xs text-amber-200/80 space-y-1 list-disc pl-4">
-                        <li>Minimum withdrawal: $1.50</li>
+                        <li>Minimum withdrawal: $0.50</li>
                         <li>Processing time: 24-48 hours</li>
                         <li>Withdrawal to the same payment method used for deposit</li>
                         <li>Referral bonus requires at least 5 referrals to withdraw</li>
