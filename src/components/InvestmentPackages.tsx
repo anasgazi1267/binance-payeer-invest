@@ -3,161 +3,165 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { TrendingUp, Clock, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export const InvestmentPackages = () => {
-  const [userBalance] = useState(0); // This would come from user state
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const { toast } = useToast();
 
   const packages = [
     {
       id: "starter",
       name: "Starter Package",
-      price: 10,
-      dailyReturn: 0.15,
+      price: 5,
+      dailyReturn: 8.5,
       duration: 30,
-      totalReturn: 4.5,
-      features: ["Daily Returns", "30 Days Duration", "0.15% Daily"]
+      totalReturn: 255,
+      description: "Perfect for beginners to start their investment journey",
+      popular: false
     },
     {
       id: "basic",
       name: "Basic Package",
+      price: 25,
+      dailyReturn: 9.2,
+      duration: 30,
+      totalReturn: 276,
+      description: "Ideal for steady growth and consistent returns",
+      popular: false
+    },
+    {
+      id: "standard",
+      name: "Standard Package",
       price: 50,
-      dailyReturn: 0.18,
-      duration: 45,
-      totalReturn: 8.1,
-      features: ["Daily Returns", "45 Days Duration", "0.18% Daily"]
+      dailyReturn: 10.5,
+      duration: 30,
+      totalReturn: 315,
+      description: "Great balance of risk and reward for regular investors",
+      popular: true
     },
     {
       id: "premium",
       name: "Premium Package",
       price: 100,
-      dailyReturn: 0.22,
-      duration: 60,
-      totalReturn: 13.2,
-      features: ["Daily Returns", "60 Days Duration", "0.22% Daily"],
-      popular: true
-    },
-    {
-      id: "professional",
-      name: "Professional Package",
-      price: 500,
-      dailyReturn: 0.28,
-      duration: 90,
-      totalReturn: 25.2,
-      features: ["Daily Returns", "90 Days Duration", "0.28% Daily"]
-    },
-    {
-      id: "enterprise",
-      name: "Enterprise Package",
-      price: 1000,
-      dailyReturn: 0.35,
-      duration: 120,
-      totalReturn: 42,
-      features: ["Daily Returns", "120 Days Duration", "0.35% Daily"]
+      dailyReturn: 12.8,
+      duration: 30,
+      totalReturn: 384,
+      description: "Higher returns for experienced investors",
+      popular: false
     },
     {
       id: "vip",
       name: "VIP Package",
-      price: 5000,
-      dailyReturn: 0.45,
-      duration: 180,
-      totalReturn: 81,
-      features: ["Daily Returns", "180 Days Duration", "0.45% Daily"]
+      price: 250,
+      dailyReturn: 15.5,
+      duration: 30,
+      totalReturn: 465,
+      description: "Maximum returns for serious investors",
+      popular: false
+    },
+    {
+      id: "elite",
+      name: "Elite Package",
+      price: 500,
+      dailyReturn: 18.2,
+      duration: 30,
+      totalReturn: 546,
+      description: "Ultimate package for high-volume investors",
+      popular: false
     }
   ];
 
-  const handlePurchase = (pkg: typeof packages[0]) => {
-    if (userBalance < pkg.price) {
-      toast({
-        title: "Insufficient Balance",
-        description: `You need $${pkg.price} to purchase this package. Please make a deposit first.`,
-        variant: "destructive"
-      });
-      return;
-    }
-
+  const handlePurchase = (packageId: string, price: number) => {
     toast({
-      title: "Package Purchased!",
-      description: `${pkg.name} activated successfully. You'll start earning daily returns immediately.`,
+      title: "Package Purchase",
+      description: `You need to deposit $${price} to activate this package`,
     });
   };
 
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-2">Investment Packages</h2>
-        <p className="text-white/70">Choose the package that fits your investment goals</p>
+        <h2 className="text-3xl font-bold text-white mb-4">Investment Packages</h2>
+        <p className="text-white/70 max-w-2xl mx-auto">
+          Choose from our carefully designed investment packages. Each package offers guaranteed daily returns 
+          for 30 days. Start investing with as little as $5!
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {packages.map((pkg) => (
-          <Card 
-            key={pkg.id} 
-            className={`bg-white/10 backdrop-blur-md border-white/20 text-white relative ${
-              pkg.popular ? "ring-2 ring-purple-500" : ""
+          <Card
+            key={pkg.id}
+            className={`bg-white/10 backdrop-blur-md border-white/20 text-white relative overflow-hidden transition-all hover:scale-105 cursor-pointer ${
+              selectedPackage === pkg.id ? "ring-2 ring-green-500" : ""
             }`}
+            onClick={() => setSelectedPackage(pkg.id)}
           >
             {pkg.popular && (
-              <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-500">
-                Most Popular
-              </Badge>
+              <div className="absolute top-0 right-0">
+                <Badge className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-none rounded-bl-lg">
+                  Most Popular
+                </Badge>
+              </div>
             )}
             
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl">{pkg.name}</CardTitle>
-              <div className="space-y-2">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl font-bold text-center">{pkg.name}</CardTitle>
+              <div className="text-center">
                 <div className="text-3xl font-bold text-green-400">${pkg.price}</div>
-                <div className="text-sm text-white/70">Investment Amount</div>
+                <p className="text-white/70 text-sm mt-1">Investment Amount</p>
               </div>
             </CardHeader>
             
             <CardContent className="space-y-4">
-              <div className="text-center space-y-2">
-                <div className="text-lg font-semibold text-purple-400">
-                  {pkg.dailyReturn}% Daily
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <TrendingUp className="h-6 w-6 text-green-400 mx-auto mb-2" />
+                  <div className="text-lg font-semibold text-green-400">{pkg.dailyReturn}%</div>
+                  <div className="text-xs text-white/70">Daily Return</div>
                 </div>
-                <div className="text-sm text-white/70">
-                  Total Return: ${pkg.totalReturn} ({pkg.duration} days)
+                
+                <div className="text-center p-3 bg-white/5 rounded-lg">
+                  <Clock className="h-6 w-6 text-blue-400 mx-auto mb-2" />
+                  <div className="text-lg font-semibold text-blue-400">{pkg.duration}</div>
+                  <div className="text-xs text-white/70">Days</div>
                 </div>
               </div>
               
-              <ul className="space-y-2">
-                {pkg.features.map((feature, index) => (
-                  <li key={index} className="text-sm text-white/70 flex items-center">
-                    <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+              <div className="text-center p-3 bg-gradient-to-r from-green-500/20 to-teal-500/20 rounded-lg border border-green-500/30">
+                <DollarSign className="h-6 w-6 text-green-400 mx-auto mb-2" />
+                <div className="text-xl font-bold text-green-400">${pkg.totalReturn}</div>
+                <div className="text-sm text-white/70">Total Return</div>
+              </div>
               
-              <Button 
-                onClick={() => handlePurchase(pkg)}
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                disabled={userBalance < pkg.price}
+              <p className="text-white/70 text-sm text-center">{pkg.description}</p>
+              
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePurchase(pkg.id, pkg.price);
+                }}
+                className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
               >
-                {userBalance < pkg.price ? "Insufficient Balance" : "Purchase Package"}
+                Purchase Package
               </Button>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
-        <CardHeader>
-          <CardTitle>Package Benefits</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-white/70">
-            <li>✅ Automatic daily returns</li>
-            <li>✅ Instant package activation</li>
-            <li>✅ Compound growth potential</li>
-            <li>✅ 24/7 customer support</li>
-            <li>✅ Secure investment platform</li>
-            <li>✅ Real-time profit tracking</li>
-          </ul>
-        </CardContent>
-      </Card>
+      <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-6">
+        <h3 className="text-yellow-400 font-semibold mb-2">⚠️ Important Information</h3>
+        <ul className="text-yellow-400/80 text-sm space-y-1">
+          <li>• All packages have a 30-day duration with guaranteed daily returns</li>
+          <li>• Returns are calculated daily and added to your balance automatically</li>
+          <li>• You can purchase multiple packages to increase your daily earnings</li>
+          <li>• Minimum withdrawal amount is $1.50</li>
+          <li>• Package activation happens immediately after purchase</li>
+        </ul>
+      </div>
     </div>
   );
 };
